@@ -4,19 +4,23 @@ var _redux = require("redux");
 
 var add = document.getElementById('add');
 var minus = document.getElementById('minus');
-var number = document.querySelector('span'); // 상태 초기값 및 액션 타입에 따른 할 일 설정(reducer)
+var number = document.querySelector('span');
+var ADD = 'ADD';
+var MINUS = 'MINUS'; // 상태 초기값 및 액션 타입에 따른 할 일 설정(reducer)
 
 var countModifier = function countModifier() {
   var count = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
   var action = arguments.length > 1 ? arguments[1] : undefined;
 
-  if (action.type === 'ADD') {
-    return count + 1;
-  } else if (action.type === "MINUS") {
-    return count - 1;
-  } else {
-    // 최종 상태를 리턴!
-    return count;
+  switch (action.type) {
+    case ADD:
+      return count + 1;
+
+    case MINUS:
+      return count - 1;
+
+    default:
+      return count;
   }
 }; // 데이터 저장소 만들고, 액션 받을 함수 지정
 
@@ -30,12 +34,12 @@ var onChange = function onChange() {
 
 add.addEventListener("click", function () {
   countStore.dispatch({
-    type: 'ADD'
+    type: ADD
   });
 });
 minus.addEventListener("click", function () {
   countStore.dispatch({
-    type: 'MINUS'
+    type: MINUS
   });
 }); // store의 변화 감지 함수 부착
 
