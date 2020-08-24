@@ -2,45 +2,53 @@
 
 var _redux = require("redux");
 
-var add = document.getElementById('add');
-var minus = document.getElementById('minus');
-var number = document.querySelector('span');
-var ADD = 'ADD';
-var MINUS = 'MINUS'; // 상태 초기값 및 액션 타입에 따른 할 일 설정(reducer)
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
-var countModifier = function countModifier() {
-  var count = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+var form = document.querySelector('form');
+var input = document.querySelector('input');
+var ul = document.querySelector('ul');
+var ADD_TODO = "ADD_TODO";
+var DELETE_TODO = "DELETE_TODO";
+
+var reducer = function reducer() {
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var action = arguments.length > 1 ? arguments[1] : undefined;
 
   switch (action.type) {
-    case ADD:
-      return count + 1;
+    case ADD_TODO:
+      // NEVER MUTATE STATE
+      return [].concat(_toConsumableArray(state), [{
+        text: action.text,
+        id: Date.now()
+      }]);
 
-    case MINUS:
-      return count - 1;
+    case DELETE_TODO:
+      return [];
 
     default:
-      return count;
+      return state;
   }
-}; // 데이터 저장소 만들고, 액션 받을 함수 지정
+};
 
-
-var countStore = (0, _redux.createStore)(countModifier); // 상태값 변경 시 해야할 일 지정
-
-var onChange = function onChange() {
-  number.innerText = countStore.getState();
-}; // modify 액션이 일어나는 dom 설정(type 프로퍼티로 이루어진 객체여야 함)
-
-
-add.addEventListener("click", function () {
-  countStore.dispatch({
-    type: ADD
-  });
+var store = (0, _redux.createStore)(reducer);
+store.subscribe(function () {
+  console.log(store.getState());
 });
-minus.addEventListener("click", function () {
-  countStore.dispatch({
-    type: MINUS
-  });
-}); // store의 변화 감지 함수 부착
 
-countStore.subscribe(onChange);
+var onSubmit = function onSubmit(e) {
+  e.preventDefault();
+  var toDo = input.value;
+  input.value = "";
+  store.dispatch({
+    type: ADD_TODO,
+    text: toDo
+  });
+};
+
+form.addEventListener('submit', onSubmit);
